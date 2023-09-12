@@ -1,0 +1,35 @@
+.container
+{
+    position:sticky;
+    width :100%;
+    height : var(--length-medium-2);
+    background: var(--monochrome-1);
+    display:flex;
+    padding:var(--length-small-2);
+}
+
+.expander {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 100%;
+    left: 0%;
+    min-width: var(--length-x-large-1);
+    background: var(--monochrome-2);
+    border-radius: 0 0 var(--length-small-2) var(--length-small-2);
+    min-height: var(--length-x-large-3);
+    transform-origin: top center;
+    transition: all ease-in-out 0.2s;
+}
+
+.expander li {
+    font-size: var(--length-small-4);
+    width: 100%;
+    text-align:left;
+    list-style: none;
+    padding:var(--length-small-1);
+}
+
+.collapse {
+   transform:scaleY(0);
+}

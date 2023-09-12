@@ -1,0 +1,33 @@
+﻿<section class="container">
+    <button class="call-to-action" onclick="@ToggleNavMenu">Expand</button>
+    <section class="expander @NavMenuCssClass">
+        <ul>
+            <li>This is an item</li>
+            <li>This is an item</li>
+            <li>This is an item @calc()</li>
+        </ul>
+    </section>
+</section>
+
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    // calculated value in nav - should probably have a list for menu items
+    private int calc(){ 
+        if(1==1){
+            return 2;
+        }
+        else
+        {
+            return 5;
+        }
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

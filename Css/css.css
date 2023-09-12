@@ -1,0 +1,153 @@
+﻿@import"https://fonts.googleapis.com/css2?family=Abel&family=Junge&family=Liu+Jian+Mao+Cao&family=Luckiest+Guy&family=Poppins&display=swap";
+
+:root {
+    /* Lengths */
+    --length-small-1: 0.25em;
+    --length-small-2: 0.5em;
+    --length-small-3: 1em;
+    --length-small-4: 1.5em;
+
+    --length-medium-1: 2em;
+    --length-medium-2: 3em;
+    --length-medium-3: 4em;
+    --length-medium-4: 5em;
+
+    --length-large-1: 6em;
+    --length-large-2: 8em;
+    --length-large-3: 10em;
+    --length-large-4: 12em;
+
+    --length-x-large-1: 15em;
+    --length-x-large-2: 20em;
+    --length-x-large-3: 25em;
+    --length-x-large-4: 30em;
+
+
+    /* Font */
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+
+    /*color*/
+    --accent-1: #81bec3;
+    --accent-2: #e5a8a8;
+    --accent-3: #f9ddab;
+
+    --monochrome-1: white;
+    --monochrome-2: #edf0f2;
+    --monochrome-3: #6b6e70;
+    --monochrome-4: #474b4f;
+    --monochrome-5: black;
+
+    /* util */
+    --transparent-25: rgba(0, 0, 0, .25);
+
+    --common-shadow: drop-shadow(1px 1px 2px rgba(0, 0, 0, .5));
+
+    --outline-shadow: drop-shadow(0px 0px 1px rgba(0, 0, 0, .5));
+
+    --custom-gradient: linear-gradient( to top left, transparent, rgba(255, 153, 150, 0), var(--accent-1) ), linear-gradient( to top right, transparent, rgba(255, 153, 150, 0), var(--accent-2) ) var(--accent-3);
+   
+    --loading-width: 2000px;
+    --loading-speed: 1s;
+
+    font-family: var(--font4);
+    line-height: 1.5;
+    font-weight: 400;
+    color: var(--color-palette-4);
+    background-color: var(--color-palette-3);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%
+}
+
+* {
+    box-sizing: border-box
+}
+
+a {
+    font-weight: 500;
+    color: var(--monochrome-4);
+    text-decoration: inherit;
+    transition: all .25s
+}
+
+a:hover {
+    color: var(--monochrome-5)
+}
+
+body {
+    margin: 0;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    overflow-y: scroll;
+    background: var(--custom-gradient)
+}
+
+button {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: .6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: #1a1a1a;
+    cursor: pointer;
+    transition: border-color .25s
+}
+
+button:hover {
+    border-color: var(--color-palette-2)
+}
+
+/* change this */
+button:focus, button:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color
+}
+
+.call-to-action {
+    background-color: var(--accent-1);
+    border-radius: 3px;
+    padding: 4px;
+    transition: all .2s ease-in-out;
+    color: var(--monochrome-1)
+}
+
+.call-to-action:hover {
+    background-color: var(--accent-3);
+    filter: var(--common-shadow);
+    transform: scale(1.05)
+}
+
+.call-to-action:hover * {
+    color: var(--monochrome-1);
+    mix-blend-mode: difference
+}
+
+
+.loading {
+    opacity: .2;
+    border-radius: var(--length-small-1);
+    background: linear-gradient(90deg,gray,lightgray,gray);
+    background-size: var(--loading-width) auto;
+    animation: loadscroll linear infinite var(--loading-speed);
+    user-select: none
+}
+
+.loading, .loading * {
+    color: transparent
+}
+
+
+
+.rainbow-border {
+    box-shadow: 0 0 0 var(--length-small-1) var(--accent-2),0 0 0 calc(var(--length-small-1) * 2) var(--accent-3),0 0 0 calc(var(--length-small-1) * 3) var(--accent-1)
+}
