@@ -2,32 +2,46 @@
     <button class="call-to-action" onclick="@ToggleNavMenu">Expand</button>
     <section class="expander @NavMenuCssClass">
         <ul>
-            <li>This is an item</li>
-            <li>This is an item</li>
-            <li>This is an item @calc()</li>
+            @foreach(MenuItem item in menuOptions)
+            {
+                <li>
+                    <a href="@item.Url">@item.Name</a>
+                </li>
+            }
+
         </ul>
     </section>
 </section>
 
 
 @code {
+    //props
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    // calculated value in nav - should probably have a list for menu items
-    private int calc(){ 
-        if(1==1){
-            return 2;
-        }
-        else
-        {
-            return 5;
-        }
+    private List<MenuItem> menuOptions = new List<MenuItem>();
+
+    //oncreate 
+    public NavMenu()
+    {
+        //add options to menu
+        menuOptions.Add(new MenuItem { Name = "Home", Url = "/" });
+        menuOptions.Add(new MenuItem { Name = "Relational Database", Url = "/reldb" });
+        menuOptions.Add(new MenuItem { Name = "Document Database", Url = "/docdb" });
+        menuOptions.Add(new MenuItem { Name = "About", Url = "/about" });
+    }
+
+    //util
+    private class MenuItem
+    {
+        public string Name { get; set; }
+        public string Url { get; set; }
     }
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
     }
+
 }
