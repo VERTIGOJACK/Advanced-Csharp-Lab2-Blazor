@@ -1,0 +1,18 @@
+﻿<button class="call-to-action" @onclick=action><span>Add</span><span class="icon icon-plus"></span></button>
+
+@code {
+    //breaking out button to separate component
+    [Parameter]
+    public string ?color { get; set; }
+    [Parameter]
+    public string? icon  { get; set; }
+    [Parameter]
+    public string? text  { get; set; }
+    [Parameter]
+    public Action action { get; set; }
+
+    protected override void OnInitialized()
+    {
+        
+    }
+}

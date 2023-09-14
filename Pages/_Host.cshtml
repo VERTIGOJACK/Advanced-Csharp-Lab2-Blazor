@@ -8,16 +8,17 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="~/" />
-    <link href="css/site.css" rel="stylesheet" />
+    <base href="~/"/>
+    <link href="css/site.css" rel="stylesheet" />  
+    <link href="css/open-iconic/font/css/IcoMoon.css" rel="stylesheet" />
     <link href="Advanced Csharp Lab2 Blazor.styles.css" rel="stylesheet" />
-    <link rel="icon" type="image/png" href="favicon.png"/>
+    <link rel="icon" type="image/svg" href="favicon.svg"/>
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body>
     <component type="typeof(App)" render-mode="ServerPrerendered" />
 
-    <div id="blazor-error-ui">
+@*     <div id="blazor-error-ui">
         <environment include="Staging,Production">
             An error has occurred. This application may no longer respond until reloaded.
         </environment>
@@ -26,8 +27,9 @@
         </environment>
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
-    </div>
+    </div> *@
 
     <script src="_framework/blazor.server.js"></script>
+    <script src="~/js/NavMenu.js"></script>
 </body>
 </html>

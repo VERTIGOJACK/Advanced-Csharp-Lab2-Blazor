@@ -1,9 +1,49 @@
-﻿@page "/"
+﻿@using Advanced_Csharp_Lab2_Blazor.Data;
+@using Advanced_Csharp_Lab2_Blazor.Models;
+@using static Advanced_Csharp_Lab2_Blazor.Data.MenuService;
+@using Advanced_Csharp_Lab2_Blazor.Models.wpmedia;
+@using Advanced_Csharp_Lab2_Blazor.Models.wppage;
+@inject MenuService menuservice;
+@inject WordpressApiService apiservice;
+@page "/";
 
-<PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<PageTitle>@currentMenu.Name</PageTitle>
 
-Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    @if(loaded == false)
+    {
+        <LoadingSpinner/>
+    }
+    else
+    {
+    <PageContainer>
+        @* wordpress sends markup, so text will need to be cleaned *@
+        <div class="title-container">
+            <img class="rainbow-border" src="@featuredMedia.source_url"/>
+            <h1>@((MarkupString)apiData.title.rendered)</h1>
+        </div>
+        <div class="wp-page">@((MarkupString)apiData.content.rendered)</div>
+    </PageContainer>
+    }
+
+
+@code{
+    private MenuItem currentMenu = new MenuItem();
+    private WpPage apiData = new WpPage();
+    private WpMedia featuredMedia = new WpMedia();
+    private bool loaded = false;
+
+    protected override void OnInitialized()
+    {
+        currentMenu = menuservice.GetCurrentItem();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //this id is the api home page
+        apiData = await apiservice.GetPage(39);
+        featuredMedia = await apiservice.GetMedia(apiData.featured_media);
+        loaded = true;
+    }
+}

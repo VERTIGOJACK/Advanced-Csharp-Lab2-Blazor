@@ -1,0 +1,12 @@
+﻿<div class="fullflex">
+    <div class="outercontainer animate-in">
+        <div class="innercontainer">
+            @ChildContent
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] 
+    public RenderFragment ChildContent { get; set; }
+}

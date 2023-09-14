@@ -1,0 +1,29 @@
+﻿.tables-container{
+    display:flex;
+    gap: var(--length-small-3);
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid var(--monochrome-3);
+    padding: 8px;
+    text-align: left;
+}
+
+th{
+    background-color: var(--accent-1);
+    color: var(--monochrome-1);
+}
+
+.title-wrapper{
+    display:flex;
+    align-items:center;
+    gap:var(--length-small-3);
+    justify-content:space-between;
+}
+
+

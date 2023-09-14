@@ -1,6 +1,10 @@
 using Advanced_Csharp_Lab2_Blazor.Data;
+using Advanced_Csharp_Lab2_Blazor.Models;
+using Advanced_Csharp_Lab2_Blazor.Models.sqlite;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.EntityFrameworkCore;
 
 namespace Advanced_Csharp_Lab2_Blazor
 {
@@ -13,13 +17,21 @@ namespace Advanced_Csharp_Lab2_Blazor
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
-            builder.Services.AddSingleton<WeatherForecastService>();
+            builder.Services.AddScoped<MenuService>();
+            builder.Services.AddScoped<SQLiteService>();
+            // using options from appsettings.json
+            builder.Services.Configure<WordpressApiOptions>(builder.Configuration.GetSection("WordpressApiOptions"));          
+            builder.Services.AddSingleton<WordpressApiService>();
+            //using appsettings to build db service, also using frameworkcore proxies to lazy load
+            builder.Services.AddDbContext<SchoolContext>(options =>
+            options.UseLazyLoadingProxies().UseSqlite(builder.Configuration.GetConnectionString("SQLite")));
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
+                
                 app.UseExceptionHandler("/Error");
             }
 

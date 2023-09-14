@@ -1,7 +1,7 @@
 @import"https://fonts.googleapis.com/css2?family=Abel&family=Junge&family=Liu+Jian+Mao+Cao&family=Luckiest+Guy&family=Poppins&display=swap";
-
 :root {
     /* Lengths */
+    --length-x-small-1: 0.1em;
     --length-small-1: 0.25em;
     --length-small-2: 0.5em;
     --length-small-3: 1em;
@@ -19,6 +19,12 @@
     --length-x-large-3: 25em;
     --length-x-large-4: 30em;
     /* Font */
+
+    --font1: "Junge", serif;
+    --font2: "Liu Jian Mao Cao", cursive;
+    --font3: "Luckiest Guy", cursive;
+    --font4: "Poppins", sans-serif;
+    --font5: sans-serif;
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
@@ -43,16 +49,11 @@
     --custom-gradient: linear-gradient( to top left, transparent, rgba(255, 153, 150, 0), var(--accent-1) ), linear-gradient( to top right, transparent, rgba(255, 153, 150, 0), var(--accent-2) ) var(--accent-3);
     --loading-width: 2000px;
     --loading-speed: 1s;
+    /*standard settings*/
     font-family: var(--font4);
     line-height: 1.5;
     font-weight: 400;
-    color: var(--color-palette-4);
-    background-color: var(--color-palette-3);
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-text-size-adjust: 100%
+    color: var(--monochrome-4);
 }
 
 * {
@@ -72,32 +73,41 @@ a {
         color: var(--monochrome-5)
     }
 
+    p{
+        font-family: var(--font5)
+    }
+
+    h1,h2,h3,h4,h5,h6{
+        font-family: var(--font4);
+    }
+
 body {
     scroll-behavior: smooth;
     overflow-y: scroll;
     background: var(--custom-gradient) no-repeat center;
+    min-height: 100vh;
 }
 
 button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-radius: 8px;
     border: 1px solid transparent;
-    padding: .6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
+    padding: var(--length-small-1);
+    min-height: var(--length-medium-1);
+    min-width: var(--length-medium-1);
     font-family: inherit;
-    background-color: #1a1a1a;
     cursor: pointer;
-    transition: border-color .25s
+    transition: border-color .25s;
+    filter: var(--common-shadow);
+    gap:var(--length-small-1);
 }
 
     button:hover {
-        border-color: var(--color-palette-2)
+        border-color: var(--monochrome-4)
     }
 
-    /* change this */
-    button:focus, button:focus-visible {
-        outline: 4px auto -webkit-focus-ring-color
-    }
 
 .call-to-action {
     background-color: var(--accent-1);
@@ -108,7 +118,7 @@ button {
 }
 
 .call-to-action:hover {
-    background-color: var(--accent-3);
+    background-color: var(--accent-1);
     filter: var(--common-shadow);
     transform: scale(1.05)
 }
@@ -133,11 +143,66 @@ button {
 }
 
 .rainbow-border {
-    box-shadow: 0 0 0 var(--length-small-1) var(--accent-2),0 0 0 calc(var(--length-small-1) * 2) var(--accent-3),0 0 0 calc(var(--length-small-1) * 3) var(--accent-1)
+    box-shadow: 0 0 0 var(--length-x-small-1) var(--accent-2),0 0 0 calc(var(--length-x-small-1) * 2) var(--accent-3),0 0 0 calc(var(--length-x-small-1) * 3) var(--accent-1)
 }
 
-.page-container {
-    display:flex;
-    flex-direction:column;
-    width:100%;
+.glass-blur {
+    background-color: rgba(255,255,255,0.25);
+    backdrop-filter: blur(10px);
+}
+
+.unselectable {
+    user-select: none;
+    outline: none;
+}
+
+/*animate text*/
+
+@keyframes textChangeAnimation {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes textChangeAnimationHack {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInAnimation {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.animated-text {
+    animation: textChangeAnimation 0.5s ease;
+}
+.animated-text-hack {
+    animation: textChangeAnimationHack 0.5s ease;
+}
+
+.animate-in {
+    animation: fadeInAnimation 0.5s ease;
+}
+
+.wp-page p{
+    margin-bottom: var(--length-small-4)
 }

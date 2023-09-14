@@ -1,0 +1,27 @@
+﻿.outercontainer {
+    --double: calc(--length-small-3 * 2);
+    max-width: 1000px;
+    min-width: calc(100% - var(--double));
+    background-color: var(--monochrome-1);
+    margin-top: var(--length-small-3);
+    margin-bottom: var(--length-small-3);
+    margin-left: var(--length-small-3);
+    margin-right: var(--length-small-3);
+    padding: var(--length-small-3);
+    border-radius: var(--length-small-1);
+    min-height: calc(100vh - var(--length-medium-4));
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.innercontainer{
+    width:100%;
+}
+
+.fullflex{
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+}

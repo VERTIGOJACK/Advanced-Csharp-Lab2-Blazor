@@ -1,8 +1,28 @@
-﻿<section class="container">
-    <button class="call-to-action" onclick="@ToggleNavMenu">Expand</button>
-    <section class="expander @NavMenuCssClass">
+﻿@using Advanced_Csharp_Lab2_Blazor.Data;
+@using static Advanced_Csharp_Lab2_Blazor.Data.MenuService;
+@inject MenuService menuservice;
+@inject NavigationManager navmanager;
+@inject IJSRuntime JSRuntime;
+
+<section class="container" id="menu">
+    <div class="bar">
+        <button class="hamburger" onclick="@ToggleNavMenu" tabindex="0">
+
+            <div id="line1"
+                 class="@HamburgerCssClass"
+                 style="--displace: -1"></div>
+            <div id="line2"
+                 class="@HamburgerCssClass"
+                 style="--displace: 0"></div>
+            <div id="line3"
+                 class="@HamburgerCssClass"
+                 style="--displace: 1"></div>
+        </button>
+        <h1 tabindex="-1" disabled class="unselectable @TextCssClass">@currentMenu.Name</h1>
+    </div>
+    <section class="expander @NavMenuCssClass glass-blur">
         <ul>
-            @foreach(MenuItem item in menuOptions)
+            @foreach (MenuItem item in menuOptions)
             {
                 <li>
                     <a href="@item.Url">@item.Name</a>
@@ -17,31 +37,62 @@
 @code {
     //props
     private bool collapseNavMenu = true;
+    private bool animateText = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string? HamburgerCssClass => collapseNavMenu ? null : "active";
+
+    //there are more performant ways of doing this, but they require manual dom manipulation.
+    //2 different classes with their own animation, but they both do the same thing.
+    //replays animation on navigation change
+    private string? TextCssClass => animateText ? "animated-text" : "animated-text-hack";
 
     private List<MenuItem> menuOptions = new List<MenuItem>();
 
-    //oncreate 
-    public NavMenu()
+    private MenuItem currentMenu = new MenuItem();
+
+    protected override void OnInitialized()
     {
-        //add options to menu
-        menuOptions.Add(new MenuItem { Name = "Home", Url = "/" });
-        menuOptions.Add(new MenuItem { Name = "Relational Database", Url = "/reldb" });
-        menuOptions.Add(new MenuItem { Name = "Document Database", Url = "/docdb" });
-        menuOptions.Add(new MenuItem { Name = "About", Url = "/about" });
+        menuOptions = menuservice.GetMenu();
+        currentMenu = menuservice.GetCurrentItem();
+        // way to trigger redraw of navbar on location change
+        navmanager.LocationChanged += HandleLocationChanged;
     }
 
-    //util
-    private class MenuItem
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        public string Name { get; set; }
-        public string Url { get; set; }
+        if (firstRender)
+        {
+            //pass dotnet instance reference to js
+            var dotnetObjRef = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("clickOutside", dotnetObjRef);
+        }      
     }
 
+    private void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        //prevent animation on navigation to same page
+        if (currentMenu != menuservice.GetCurrentItem())
+        {
+            currentMenu = menuservice.GetCurrentItem();
+            animateText = !animateText;
+            CloseNavMenu();
+            StateHasChanged();
+        }
+        
+    }
+
+    //methods
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    [JSInvokable]
+    public void CloseNavMenu()
+    {
+        collapseNavMenu = true;
+        StateHasChanged();
     }
 
 }
