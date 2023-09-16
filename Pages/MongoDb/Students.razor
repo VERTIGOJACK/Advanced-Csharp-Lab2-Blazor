@@ -1,0 +1,132 @@
+﻿@using Advanced_Csharp_Lab2_Blazor.Data;
+@using Advanced_Csharp_Lab2_Blazor.Models;
+@using static Advanced_Csharp_Lab2_Blazor.Data.MenuService;
+@using Advanced_Csharp_Lab2_Blazor.Models.mongo;
+@using Advanced_Csharp_Lab2_Blazor.Models.wpmedia;
+@using Advanced_Csharp_Lab2_Blazor.Models.wppage;
+@inject MenuService menuservice;
+@inject MongoDbService mongoservice;
+@page "/docdb/student";
+
+
+<PageTitle>@currentMenu.Name</PageTitle>
+
+
+    @if(loaded == false)
+    {
+        <LoadingSpinner/>
+    }
+    else
+    {
+    <Modal Show="createModal" Title="Add Student">
+        <div class="content-wrapper">
+            <span class="input-container">
+                <label>First Name</label>
+                <input @bind="student.first_name" type="text" />
+            </span>
+            <span class="input-container">
+                <label>Last Name</label>
+                <input @bind="student.last_name" type="text" />
+            </span>
+            <span class="footer-wrapper">
+                <CustomButton className="call-to-action" icon="icon-upload" action="CreateStudent">Create</CustomButton>
+            </span>
+        </div>
+    </Modal>
+
+
+    <PageContainer>
+        <div class="tables-container">
+            <div class="table-wrapper">
+                <div class="title-wrapper">
+                    <h1>@nameof(Student)</h1>
+                    <CustomButton className="call-to-action" icon="icon-plus" action="()=>{SetCreateModal(true);}">Add</CustomButton>
+                </div>
+                <table>
+                    <tr>
+                        <th>Id</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Manage</th>
+                    </tr>
+                    @foreach (Student student in students)
+                    {
+                        <tr>
+                            <td>@student._id</td>
+                            <td>@student.first_name</td>
+                            <td>@student.last_name</td>    
+                            <td>
+                                <span class="edit-cell">
+                                    @*buttons for edit and delete*@
+                                    <CustomButton className="call-to-action danger" icon="icon-bin" action="()=>{DeleteStudent(student);}"></CustomButton>
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </PageContainer>
+    }
+
+
+@code{
+    private MenuItem currentMenu = new MenuItem();
+    private List<Student> students = new List<Student>();
+
+    private Student student = new Student();
+
+    private bool loaded = false;
+    public bool createModal = false;
+
+    public void CreateStudent()
+    {
+        //push to database
+        mongoservice.AddStudent(this.student);
+        //reset values
+        this.student = new Student();
+        //close modal
+        SetCreateModal(false);
+        //update data
+        Update();
+    }
+
+    public void DeleteStudent(Student student)
+    {     
+        //push to database
+        mongoservice.RemoveStudent(student);
+        //update
+        Update();
+        //notify
+        StateHasChanged();
+    }
+
+    //modal open
+    public void SetCreateModal(bool state)
+    {
+        this.createModal = state;
+        student = new Student();
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        currentMenu = menuservice.GetCurrentItem();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        students = mongoservice.GetStudents();
+        //simulate network delay
+        await Task.Delay(500);
+        loaded = true;
+    }
+
+
+    private void Update()
+    {
+        loaded = false;
+        students = mongoservice.GetStudents();
+        loaded = true;
+    }
+}

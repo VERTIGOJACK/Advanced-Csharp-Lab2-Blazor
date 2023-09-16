@@ -1,5 +1,6 @@
 using Advanced_Csharp_Lab2_Blazor.Data;
 using Advanced_Csharp_Lab2_Blazor.Models;
+using Advanced_Csharp_Lab2_Blazor.Models.mongo;
 using Advanced_Csharp_Lab2_Blazor.Models.sqlite;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -22,6 +23,9 @@ namespace Advanced_Csharp_Lab2_Blazor
             // using options from appsettings.json
             builder.Services.Configure<WordpressApiOptions>(builder.Configuration.GetSection("WordpressApiOptions"));          
             builder.Services.AddSingleton<WordpressApiService>();
+            //set up mongo service
+            builder.Services.Configure<MongoDbOptions>(builder.Configuration.GetSection("MongoDbOptions"));
+            builder.Services.AddSingleton<MongoDbService>();
             //using appsettings to build db service, also using frameworkcore proxies to lazy load
             builder.Services.AddDbContext<SchoolContext>(options =>
             options.UseLazyLoadingProxies().UseSqlite(builder.Configuration.GetConnectionString("SQLite")));

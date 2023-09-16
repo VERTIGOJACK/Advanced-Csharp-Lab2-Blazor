@@ -1,18 +1,31 @@
-﻿<button class="call-to-action" @onclick=action><span>Add</span><span class="icon icon-plus"></span></button>
+﻿<button @onclick=RunMethod class="@className"><span>@ChildContent</span><span class="icon @icon"></span></button>
 
 @code {
-    //breaking out button to separate component
-    [Parameter]
-    public string ?color { get; set; }
     [Parameter]
     public string? icon  { get; set; }
     [Parameter]
-    public string? text  { get; set; }
+    public Action? action { get; set; }
     [Parameter]
-    public Action action { get; set; }
+    public Func<Task>? asyncAction { get; set; }
+    [Parameter]
+    public string? className { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
 
     protected override void OnInitialized()
     {
-        
+
+    }
+
+    private async Task RunMethod()
+    {
+        if(action != null)
+        {
+             action();
+        }
+        else if (asyncAction != null)
+        {
+            await asyncAction();
+        }
     }
 }

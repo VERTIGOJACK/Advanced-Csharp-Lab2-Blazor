@@ -1,0 +1,200 @@
+﻿@using Advanced_Csharp_Lab2_Blazor.Data;
+@using Advanced_Csharp_Lab2_Blazor.Models.sqlite;
+@using static Advanced_Csharp_Lab2_Blazor.Data.MenuService;
+@inject NavigationManager navmanager;
+@inject MenuService menuservice;
+@inject SQLiteService sqlservice;
+@page "/reldb/course";
+
+<PageTitle>@currentMenu.Name</PageTitle>
+
+@if (loaded == false)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <Modal Show="createModal" Title="Add Course">
+        <div class="content-wrapper">
+            <span class="input-container">
+                <label>@nameof(Course.Name)</label>
+                <input @bind="course.Name" type="text" />
+            </span>
+            <span class="input-container">
+                <label>@nameof(Course.Description)</label>
+                <input @bind="course.Description" type="text" />
+            </span>
+            <span class="footer-wrapper">
+                <CustomButton className="call-to-action" icon="icon-upload" asyncAction="CreateNewCourse">Create</CustomButton>
+            </span>
+        </div>
+    </Modal>
+
+    <Modal Show="updateModal" Title="Update">
+        <div class="content-wrapper">
+            <span class="input-container">
+                <label>@nameof(Course.Name)</label>
+                <input @bind="course.Name" type="text" />
+            </span>
+            <span class="input-container">
+                <label>@nameof(Course.Description)</label>
+                <input @bind="course.Description" type="text" />
+            </span>
+            <span class="footer-wrapper">
+                <CustomButton className="call-to-action" icon="icon-loop2" asyncAction="UpdateCourse">Update</CustomButton>
+            </span>
+        </div>
+    </Modal>
+
+    <PageContainer>
+        <div class="tables-container">
+            <div class="table-wrapper">
+                <div class="title-wrapper">
+                    <h1>@nameof(Course)</h1>
+                    <CustomButton className="call-to-action" icon="icon-plus" action="()=>{SetCreateModal(true);}">Add</CustomButton>
+                </div>
+                <table>
+                    <tr>
+                        <th>@nameof(Course.Id)</th>
+                        <th>@nameof(Course.Name)</th>
+                        <th>@nameof(Course.Description)</th>
+                        <th>@nameof(Course.Teachers)</th>
+                        <th>Manage</th>
+                    </tr>
+                    @foreach (Course course in courses)
+                    {
+                        <tr>
+                            <td>@course.Id</td>
+                            <td>@course.Name</td>
+                            <td>@course.Description</td>
+                            <td>
+                                @if (course.Teachers != null)
+                                {
+                                    @foreach (Teacher teacher in course.Teachers)
+                                    {
+                                        @(teacher.Name + ", ")
+                                    }
+                                }
+                            </td>
+                            <td>
+                                <span class="edit-cell">
+                                    @*buttons for edit and delete*@
+                                    <CustomButton className="call-to-action" icon="icon-pencil" action="()=>{SetUpdateModal(true,course.Id);}"></CustomButton>
+                                    <CustomButton className="call-to-action" icon="icon-profile" action="()=>{navmanager.NavigateTo(navmanager.Uri+'/'+course.Id);}"></CustomButton>
+                                    <CustomButton className="call-to-action danger" icon="icon-bin" asyncAction="async ()=>{await DeleteCourse(course.Id);}"></CustomButton>
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </PageContainer>
+}
+
+@code {
+    //from menuservice
+    private MenuItem currentMenu = new MenuItem();
+    //from database
+    private List<Teacher> teachers = new List<Teacher>();
+    private List<Course> courses = new List<Course>();
+
+    //filtered
+    private List<Teacher> filterTeachers = new List<Teacher>();
+
+    //for creation of new records
+    private Course course = new Course();
+
+
+    private bool loaded = false;
+    public bool createModal = false;
+    public bool updateModal = false;
+
+    //create new course
+    public async Task CreateNewCourse()
+    {
+        //grab course from component
+        //push to database
+        await sqlservice.CreateCourseAsync(this.course);
+        //reset values
+        this.course = new Course();
+        //close modal
+        SetCreateModal(false);
+        //update data
+        await Update();
+    }
+
+    //create new teacher
+    public async Task UpdateCourse()
+    {
+        //push to database
+        await sqlservice.UpdateCourseAsync(this.course);
+        //reset values
+        this.course = new Course();
+        //close modal (this also resets teacher but previous line is included for readablility)
+        SetUpdateModal(false, -1);
+        //update data
+        await Update();
+        //notify
+        StateHasChanged();
+    }
+
+    //create new teacher
+    public async Task DeleteCourse(int id)
+    {
+        //grab teacher from component, else empty
+        course = courses.Where(x => x.Id == id).FirstOrDefault() ?? new Course();
+        //push to database
+        await sqlservice.DeleteCourseAsync(this.course);
+        //reset values
+        this.course = new Course();
+        //update data
+        await Update();
+        //notify
+        StateHasChanged();
+    }
+
+    //modal open
+    public void SetCreateModal(bool state)
+    {
+        this.updateModal = false;
+        this.createModal = state;
+        course = new Course();
+        StateHasChanged();
+    }
+
+    public void SetUpdateModal(bool state, int id)
+    {
+        this.createModal = false;
+        this.updateModal = state;
+        course = courses.Where(x => x.Id == id).FirstOrDefault() ?? new Course();
+        StateHasChanged();
+    }
+
+    public void FilterTeachers(Course course)
+    {
+        //select teachers the are not in course list
+        filterTeachers = teachers.Where(x => !course.Teachers.Contains(x)).ToList();
+    }
+
+    //lifecycle
+    protected override void OnInitialized()
+    {
+        currentMenu = menuservice.GetCurrentItem();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //simulate api call
+        await Task.Delay(500);
+        await Update();
+    }
+
+    private async Task Update()
+    {
+        loaded = false;
+        teachers = await sqlservice.ReadTeachersAsync();
+        courses = await sqlservice.ReadCoursesAsync();
+        loaded = true;
+    }
+}

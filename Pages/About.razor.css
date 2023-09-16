@@ -1,0 +1,12 @@
+﻿.title-container {
+    display:flex;
+    height:var(--length-medium-2);
+    margin-bottom:var(--length-small-4)
+}
+    .title-container img {
+        max-height: 100%; /* Set the maximum height of the image relative to its parent (the header) */
+        width: auto; /* Maintain the image's aspect ratio */
+        border-radius:100%;
+        margin:var(--length-small-2);
+    }
+

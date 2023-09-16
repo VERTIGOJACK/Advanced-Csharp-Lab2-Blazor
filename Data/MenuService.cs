@@ -13,9 +13,10 @@ namespace Advanced_Csharp_Lab2_Blazor.Data
         public MenuService(NavigationManager navigationManager)
         {
             //add options to menu
-            menuOptions.Add(new MenuItem { Name = "Home", Url = "/" });
-            menuOptions.Add(new MenuItem { Name = "Relational Database", Url = "/reldb" });
-            menuOptions.Add(new MenuItem { Name = "Document Database", Url = "/docdb" });
+            menuOptions.Add(new MenuItem { Name = "Home (API)", Url = "/" });
+            menuOptions.Add(new MenuItem { Name = "Teachers (EF)", Url = "/reldb/teacher" });
+            menuOptions.Add(new MenuItem { Name = "Courses (EF)", Url = "/reldb/course" });
+            menuOptions.Add(new MenuItem { Name = "Students (MongoDB)", Url = "/docdb/student" });
             menuOptions.Add(new MenuItem { Name = "About", Url = "/about" });
 
             //assign navmanager
@@ -33,8 +34,16 @@ namespace Advanced_Csharp_Lab2_Blazor.Data
             string route = navigationManager.Uri.Replace(navigationManager.BaseUri, "");
             //add leading slash
             route = "/" + route;
-            //find item with mathing route
-            return menuOptions.Where(option => option.Url.Contains(route)).FirstOrDefault();
+            //find item with mathcing route
+            MenuItem item = menuOptions.Where(option => option.Url.Contains(route)).FirstOrDefault();
+
+            if (item == null) {
+                //fallback for paths with id
+                string[] split = route.Split('/');               
+                item = menuOptions.Where(option => option.Url.Contains(split[split.Length-2])).FirstOrDefault();
+            }
+
+            return item;
         }
 
         //util

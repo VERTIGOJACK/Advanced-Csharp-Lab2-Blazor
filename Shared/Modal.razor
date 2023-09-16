@@ -1,0 +1,27 @@
+﻿<div class="modal-outer glass-blur @ShowModalCalc">
+    <div class="modal-inner">
+        <div class="title-section">
+            <h1>@Title</h1>
+            @*add proper class to button for colors n such*@
+            <CustomButton action="CloseModal" icon="icon-cross">Close</CustomButton>
+        </div>
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? Title { get; set; }
+    [Parameter]
+    public bool Show { get; set; }
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string? ShowModalCalc => Show ? "active" : "inactive";
+
+    public void CloseModal()
+    {
+        Show = false;
+        StateHasChanged();
+    }
+}

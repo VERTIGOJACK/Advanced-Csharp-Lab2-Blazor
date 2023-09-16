@@ -117,8 +117,11 @@ button {
     color: var(--monochrome-1);
 }
 
+    .call-to-action.danger {
+        background-color: var(--accent-2);
+    }
+
 .call-to-action:hover {
-    background-color: var(--accent-1);
     filter: var(--common-shadow);
     transform: scale(1.05)
 }

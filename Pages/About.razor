@@ -1,0 +1,52 @@
+﻿@using Advanced_Csharp_Lab2_Blazor.Data;
+@using Advanced_Csharp_Lab2_Blazor.Models;
+@using static Advanced_Csharp_Lab2_Blazor.Data.MenuService;
+@using Advanced_Csharp_Lab2_Blazor.Models.wpmedia;
+@using Advanced_Csharp_Lab2_Blazor.Models.wppage;
+@inject MenuService menuservice;
+@page "/about";
+
+
+<PageTitle>@currentMenu.Name</PageTitle>
+
+
+    @if(loaded == false)
+    {
+        <LoadingSpinner/>
+    }
+    else
+    {
+    <PageContainer>
+        @* wordpress sends markup, so text will need to be cleaned *@
+        <div class="title-container">
+            <h1>So what is this all about ?</h1>
+        </div>
+        <p>
+            This website was an assignment for the "Advanced C# Programming" course. The website was constructed using the .NET platform with Blazor pages. It successfully connects to and manipulates both an SQL database and a document database.
+
+            One noteworthy achievement is the menu service and its integration with the navbar. This feature includes a JavaScript interop function that ensures the navbar menu closes when users click outside of it within the DOM.
+            </p>
+        
+       
+    </PageContainer>
+    }
+
+
+@code{
+    private MenuItem currentMenu = new MenuItem();
+    private WpPage apiData = new WpPage();
+    private WpMedia featuredMedia = new WpMedia();
+    private bool loaded = false;
+
+    protected override void OnInitialized()
+    {
+        currentMenu = menuservice.GetCurrentItem();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //simulate api call
+        await Task.Delay(500);   
+        loaded = true;
+    }
+}

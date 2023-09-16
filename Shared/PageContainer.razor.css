@@ -13,10 +13,12 @@
     position: relative;
     display: flex;
     justify-content: center;
+    
 }
 
-.innercontainer{
-    width:100%;
+.innercontainer {
+    width: 100%;
+    transition: all ease-in-out 1s;
 }
 
 .fullflex{

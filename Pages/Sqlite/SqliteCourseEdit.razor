@@ -1,0 +1,184 @@
+﻿@using Advanced_Csharp_Lab2_Blazor.Data;
+@using Advanced_Csharp_Lab2_Blazor.Models.sqlite;
+@using static Advanced_Csharp_Lab2_Blazor.Data.MenuService;
+@inject NavigationManager navmanager;
+@inject MenuService menuservice;
+@inject SQLiteService sqlservice;
+@page "/reldb/course/{CourseId:int}";
+
+<PageTitle>@currentMenu.Name</PageTitle>
+
+@if (loaded == false)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <PageContainer>
+        <div class="content-wrapper">
+            <div class="tables-container">
+                <div class="table-wrapper">
+                    <div class="title-wrapper">
+                        <h1>@course.Name</h1>
+                    </div>
+                    <table>
+                        <tr>
+                            <th>@nameof(Teacher.Id)</th>
+                            <th>@nameof(Teacher.Name)</th>
+                            <th>Manage</th>
+                        </tr>
+                        @foreach (Teacher teacher in course.Teachers)
+                        {
+                            <tr>
+                                <td>@teacher.Id</td>
+                                <td>@teacher.Name</td>
+                                <td>
+                                    <span class="edit-cell">
+                                        @*buttons for edit and delete*@
+                                        <CustomButton className="call-to-action danger" icon="icon-user-minus" asyncAction="async ()=>{await DeleteTeacher(teacher);}"></CustomButton>
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+                <div class="table-wrapper">
+                    <div class="title-wrapper">
+                        <h1>Available teachers</h1>
+                    </div>
+                    <table>
+                        <tr>
+                            <th>@nameof(Teacher.Id)</th>
+                            <th>@nameof(Teacher.Name)</th>
+                            <th>Manage</th>
+                        </tr>
+                        @foreach (Teacher teacher in filterTeachers)
+                        {
+                            <tr>
+                                <td>@teacher.Id</td>
+                                <td>@teacher.Name</td>
+                                <td>
+                                    <span class="edit-cell">
+                                        @*buttons for edit and delete*@
+                                        <CustomButton className="call-to-action" icon="icon-user-plus" asyncAction="async ()=>{await AddTeacher(teacher);}"></CustomButton>
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+            <div class="footer-wrapper">
+                <CustomButton className="call-to-action" icon="icon-arrow-left" action="()=>{navmanager.NavigateTo(parentPage);}">Back</CustomButton>
+            </div>
+        </div>
+
+    </PageContainer>
+}
+
+@code {
+    //from menuservice
+    private MenuItem currentMenu = new MenuItem();
+
+    //from database
+    private List<Teacher> teachers = new List<Teacher>();
+    private Course course = new Course();
+
+    //filtered
+    private List<Teacher> filterTeachers = new List<Teacher>();
+
+    [Parameter]
+    public int CourseId { get; set; }
+
+    string parentPage = "";
+
+    private bool loaded = false;
+    public bool createModal = false;
+    public bool updateModal = false;
+
+    //create new teacher
+    public async Task UpdateCourse()
+    {
+        //push to database
+        await sqlservice.UpdateCourseAsync(this.course);
+        //update data
+        await Update();
+        //notify
+        StateHasChanged();
+    }
+
+    //create new teacher
+    public async Task DeleteTeacher(Teacher teacher)
+    {
+        //remove teacher from course list
+        course.Teachers.Remove(teacher);
+        //push to database
+        await sqlservice.UpdateCourseAsync(this.course);
+        //update data
+        await Update();
+        //notify
+        StateHasChanged();
+    }
+
+    //create new teacher
+    public async Task AddTeacher(Teacher teacher)
+    {
+        //remove teacher from course list
+        course.Teachers.Add(teacher);
+        //push to database
+        await sqlservice.UpdateCourseAsync(this.course);
+        //update data
+        await Update();
+        //notify
+        StateHasChanged();
+    }
+
+    public void FilterTeachers(Course course)
+    {
+        //select teachers the are not in course list
+        if (teachers.Where(x => !course.Teachers.Contains(x)) != null){
+            filterTeachers = teachers.Where(x => !course.Teachers.Contains(x)).ToList();
+        }
+        else
+        {
+            filterTeachers = new List<Teacher>();
+        }
+    }
+
+    public void BuildParentPageUrl()
+    {
+        //original path
+        string originalPath = navmanager.Uri;
+        //split path into array
+        string[] split = originalPath.Split("/");
+        //get last item
+        string last = split[split.Length - 1];
+        //add leading slash
+        last = "/" + last;
+        //replace last item in original string with nothing
+        parentPage = originalPath.Replace(last, "");
+    }
+
+    //lifecycle
+    protected override void OnInitialized()
+    {
+        currentMenu = menuservice.GetCurrentItem();
+        BuildParentPageUrl();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //simulate api call
+        await Task.Delay(500);
+        await Update();
+    }
+
+    private async Task Update()
+    {
+        loaded = false;
+        teachers = await sqlservice.ReadTeachersAsync();
+        course = await sqlservice.ReadCourseAsync(this.CourseId);
+        FilterTeachers(this.course);
+        loaded = true;
+    }
+}

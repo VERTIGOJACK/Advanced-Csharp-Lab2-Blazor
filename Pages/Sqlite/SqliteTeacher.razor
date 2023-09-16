@@ -1,0 +1,182 @@
+﻿@using Advanced_Csharp_Lab2_Blazor.Data;
+@using Advanced_Csharp_Lab2_Blazor.Models.sqlite;
+@using static Advanced_Csharp_Lab2_Blazor.Data.MenuService;
+@inject MenuService menuservice;
+@inject SQLiteService sqlservice;
+@page "/reldb/teacher";
+
+<PageTitle>@currentMenu.Name</PageTitle>
+
+@if (loaded == false)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <Modal Show="createModal" Title="Add teacher">
+        <div class="content-wrapper">
+            <span class="input-container">
+                <label>@nameof(Teacher.Name)</label>
+                <input @bind="teacher.Name" type="text" />
+            </span>
+            <span class="footer-wrapper">
+            <CustomButton className="call-to-action" icon="icon-upload" asyncAction="CreateNewTeacher">Create</CustomButton>
+            </span>
+        </div>
+    </Modal>
+
+    <Modal Show="updateModal" Title="Update">
+        <div class="content-wrapper">
+            <span class="input-container">
+                <label>@nameof(Teacher.Name)</label>
+                <input @bind="teacher.Name" type="text" />
+            </span>
+            <span class="footer-wrapper">
+                <CustomButton className="call-to-action" icon="icon-loop2" asyncAction="UpdateTeacher">Update</CustomButton>
+            </span>
+        </div>
+    </Modal>
+
+    <PageContainer>
+        <div class="tables-container">
+            <div class="table-wrapper">
+                <div class="title-wrapper">
+                    <h1>@nameof(Teacher)</h1>
+                    <CustomButton className="call-to-action" icon="icon-plus" action="()=>{SetCreateModal(true);}">Add</CustomButton>
+                </div>
+                <table>
+                    <tr>
+                        <th>@nameof(Teacher.Id)</th>
+                        <th>@nameof(Teacher.Name)</th>
+                        <th>@nameof(Teacher.Courses)</th>
+                        <th>Manage</th>
+                    </tr>
+                    @foreach (Teacher teacher in teachers)
+                    {
+                        <tr>
+                            <td>@teacher.Id</td>
+                            <td>@teacher.Name</td>
+                            <td>
+                                @if (teacher.Courses != null)
+                                {
+                                    @foreach (Course course in teacher.Courses)
+                                    {
+                                        @(course.Name + ", ")
+                                    }
+                                }
+                            </td>
+                            <td>
+                                <span class="edit-cell">
+                                @*buttons for edit and delete*@
+                                <CustomButton className="call-to-action" icon="icon-pencil" action="()=>{SetUpdateModal(true,teacher.Id);}"></CustomButton>
+                                <CustomButton className="call-to-action danger" icon="icon-bin" asyncAction="async ()=>{await DeleteTeacher(teacher.Id);}"></CustomButton>
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </PageContainer>
+}
+
+@code {
+    //from menuservice
+    private MenuItem currentMenu = new MenuItem();
+    //from database
+    private List<Teacher> teachers = new List<Teacher>();
+    private List<Course> courses = new List<Course>();
+    //for creation of new records
+    private Teacher teacher = new Teacher();
+
+
+    private bool loaded = false;
+    public bool createModal = false;
+    public bool updateModal = false;
+
+    //create new teacher
+    public async Task CreateNewTeacher()
+    {
+        //grab teacher from component
+        //push to database
+        await sqlservice.CreateTeacherAsync(this.teacher);
+        //reset values
+        this.teacher = new Teacher();
+        //close modal
+        SetCreateModal(false);
+        //update data
+        await Update();
+    }
+
+    //create new teacher
+    public async Task UpdateTeacher()
+    {
+        //push to database
+        await sqlservice.UpdateTeacherAsync(this.teacher);
+        //reset values
+        this.teacher = new Teacher();
+        //close modal (this also resets teacher but previous line is included for readablility)
+        SetUpdateModal(false, -1);
+        //update data
+        await Update();
+        //notify
+        StateHasChanged();
+    }
+
+    //create new teacher
+    public async Task DeleteTeacher(int id)
+    {
+        //grab teacher from component, else empty
+        teacher = teachers.Where(x => x.Id == id).FirstOrDefault() ?? new Teacher();
+        //push to database
+        await sqlservice.DeleteTeacherAsync(this.teacher);
+        //reset values
+        this.teacher = new Teacher();
+        //update data
+        await Update();
+        //notify
+        StateHasChanged();
+    }
+
+    //modal open
+    public void SetCreateModal(bool state)
+    {
+        //other modal does not get reset at some point, dumb solution but it works
+        this.updateModal = false;
+        //then do the stuff
+        this.createModal = state;
+        teacher = new Teacher();
+        StateHasChanged();
+    }
+
+    public void SetUpdateModal(bool state,int id)
+    {
+        this.createModal = false;
+
+        this.updateModal = state;
+        teacher = teachers.Where(x => x.Id == id).FirstOrDefault() ?? new Teacher();     
+        StateHasChanged();
+    }
+
+    //lifecycle
+    protected override void OnInitialized()
+    {
+        currentMenu = menuservice.GetCurrentItem();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //simulate api call
+        await Task.Delay(500);
+        await Update();
+    }
+
+    private async Task Update()
+    {
+        loaded = false;
+        teachers = await sqlservice.ReadTeachersAsync();
+        courses = await sqlservice.ReadCoursesAsync();
+
+        loaded = true;
+    }
+}
